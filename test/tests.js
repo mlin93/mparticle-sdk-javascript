@@ -1,3 +1,4 @@
+/*jshint expr: true*/
 describe('mParticle Core SDK', function() {
     var server,
         apiKey = 'test_key',
@@ -108,7 +109,7 @@ describe('mParticle Core SDK', function() {
                 this.isVisible = false;
                 this.logOutCalled = false;
 
-                this.trackerId = null
+                this.trackerId = null;
                 this.userAttributes = null;
                 this.userIdentities = null;
                 this.appVersion = null;
@@ -278,7 +279,7 @@ describe('mParticle Core SDK', function() {
         data.should.have.property('n', 'Test Event');
         data.should.have.property('et', mParticle.EventType.Navigation);
         data.should.have.property('attrs');
-        data.attrs.should.have.property('mykey', 'myvalue')
+        data.attrs.should.have.property('mykey', 'myvalue');
 
         done();
     });
@@ -1542,7 +1543,7 @@ describe('mParticle Core SDK', function() {
         mParticle.setOptOut(true);
         server.requests = [];
 
-        mParticle.logEvent('test')
+        mParticle.logEvent('test');
         server.requests.should.have.lengthOf(0);
 
         done();
@@ -1560,7 +1561,7 @@ describe('mParticle Core SDK', function() {
     });
 
     it('should get app version', function(done) {
-        mParticle.setAppVersion('2.0')
+        mParticle.setAppVersion('2.0');
 
         var appVersion = mParticle.getAppVersion();
 
@@ -2116,10 +2117,10 @@ describe('mParticle Core SDK', function() {
 
         var userAttributes = mParticle.getUserAttributesLists();
 
-        userAttributes['numbers'].push(6);
+        userAttributes.numbers.push(6);
 
-        var userAttributes1 = mParticle.getUserAttributesLists();;
-        userAttributes1['numbers'].should.have.lengthOf(5);
+        var userAttributes1 = mParticle.getUserAttributesLists();
+        userAttributes1.numbers.should.have.lengthOf(5);
 
         done();
     });
@@ -2134,11 +2135,11 @@ describe('mParticle Core SDK', function() {
         var userAttributes = mParticle.getAllUserAttributes();
 
         userAttributes.blah = 'test';
-        userAttributes['numbers'].push(6);
+        userAttributes.numbers.push(6);
 
         var userAttributes1 = mParticle.getAllUserAttributes();
 
-        userAttributes1['numbers'].should.have.lengthOf(5);
+        userAttributes1.numbers.should.have.lengthOf(5);
         userAttributes1.should.not.have.property('blah');
 
         done();
@@ -2282,7 +2283,7 @@ describe('mParticle Core SDK', function() {
         var productEvent = expandedEvents[1];
         productEvent.should.have.property('EventName', 'eCommerce - purchase - Item');
         productEvent.should.have.property('EventCategory',  mParticle.EventType.Transaction);
-        var attributes = productEvent.EventAttributes;
+        attributes = productEvent.EventAttributes;
         attributes.should.not.have.property('Affiliation');
         attributes.should.not.have.property('Total Amount');
         attributes.should.not.have.property('Shipping Amount');
@@ -2500,7 +2501,7 @@ describe('mParticle Core SDK', function() {
         attributes.should.have.property('Id', 'foo-id');
         attributes.should.have.property('Creative', 'foo-creative');
         attributes.should.have.property('Name', 'foo-name');
-        attributes.should.have.property('Position', 'foo-position')
+        attributes.should.have.property('Position', 'foo-position');
         attributes.should.have.property('foo-event-attribute-key', 'foo-event-attribute-value');
 
         done();
@@ -2509,7 +2510,7 @@ describe('mParticle Core SDK', function() {
 
     it('expand null commerce event', function(done) {
         var expandedEvents = mParticle.eCommerce.expandCommerceEvent(null);
-        (expandedEvents == null).should.be.true;
+        (expandedEvents === null).should.be.true;
 
         done();
     });
