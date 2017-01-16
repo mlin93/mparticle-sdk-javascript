@@ -15,6 +15,7 @@
 //
 //  Uses portions of code from jQuery
 //  jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
+/*jshint unused:true, eqnull:true */
 
 (function(window) {
     var serviceUrl = "jssdk.mparticle.com/v1/JS/",
@@ -41,7 +42,6 @@
         productsBags = {},
         cartProducts = [],
         currencyCode = null,
-        MockHttpRequest = null,
         appVersion = null,
         appName = null,
         customFlags = null,
@@ -404,10 +404,10 @@
     }
 
     function isWebViewEmbedded() {
-        if ((window.external && typeof (window.external.Notify) === 'unknown')
-            || window.mParticleAndroid
-            || isUIWebView()
-            || window.mParticle.isIOS) {
+        if ((window.external && typeof (window.external.Notify) === 'unknown') ||
+            window.mParticleAndroid ||
+            isUIWebView() ||
+            window.mParticle.isIOS) {
             return true;
         }
 
@@ -583,17 +583,17 @@
                 // The two cases are controlled by the "includeOnMatch" boolean value.
                 // Supported message types for attribute forwarding rules are defined in the forwardingRuleMessageTypes array
 
-                if (forwardingRuleMessageTypes.indexOf(event.EventDataType) > -1
-                    && forwarders[i].filteringEventAttributeValue
-                    && forwarders[i].filteringEventAttributeValue.eventAttributeName
-                    && forwarders[i].filteringEventAttributeValue.eventAttributeValue) {
+                if (forwardingRuleMessageTypes.indexOf(event.EventDataType) > -1 &&
+                    forwarders[i].filteringEventAttributeValue &&
+                    forwarders[i].filteringEventAttributeValue.eventAttributeName &&
+                    forwarders[i].filteringEventAttributeValue.eventAttributeValue) {
 
                     var foundProp = null;
 
                     // Attempt to find the attribute in the collection of event attributes
                     if (event.EventAttributes) {
                         for (var prop in event.EventAttributes) {
-                            var hashedName = generateHash(prop);
+                            hashedName = generateHash(prop);
 
                             if (hashedName == forwarders[i].filteringEventAttributeValue.eventAttributeName) {
                                 foundProp = {
@@ -606,8 +606,8 @@
                         }
                     }
 
-                    var isMatch = foundProp != null
-                        && foundProp.value == forwarders[i].filteringEventAttributeValue.eventAttributeValue;
+                    var isMatch = foundProp != null &&
+                        foundProp.value == forwarders[i].filteringEventAttributeValue.eventAttributeValue;
 
                     var shouldInclude =
                         forwarders[i].filteringEventAttributeValue.includeOnMatch === true ? isMatch : !isMatch;
@@ -622,9 +622,9 @@
                 clonedEvent = extend(true, clonedEvent, event);
 
                 // Check event filtering rules
-                if (event.EventDataType == MessageType.PageEvent
-                    && (inFilteredList(forwarders[i].eventNameFilters, hashedName)
-                        || inFilteredList(forwarders[i].eventTypeFilters, hashedType))) {
+                if (event.EventDataType == MessageType.PageEvent &&
+                    (inFilteredList(forwarders[i].eventNameFilters, hashedName) ||
+                     inFilteredList(forwarders[i].eventTypeFilters, hashedType))) {
                     continue;
                 }
                 else if (event.EventDataType == MessageType.Commerce && inFilteredList(forwarders[i].eventTypeFilters, hashedType)) {
@@ -772,16 +772,16 @@
             if (event.CustomFlags.hasOwnProperty(prop)) {
                 if (Array.isArray(event.CustomFlags[prop])) {
                     for (var i = 0; i < event.CustomFlags[prop].length; i++) {
-                        if (typeof event.CustomFlags[prop][i] === 'number'
-                            || typeof event.CustomFlags[prop][i] === 'string'
-                            || typeof event.CustomFlags[prop][i] === 'boolean') {
+                        if (typeof event.CustomFlags[prop][i] === 'number' ||
+                            typeof event.CustomFlags[prop][i] === 'string' ||
+                            typeof event.CustomFlags[prop][i] === 'boolean') {
                             valueArray.push(event.CustomFlags[prop][i].toString());
                         }
                     }
                 }
-                else if (typeof event.CustomFlags[prop] === 'number'
-                    || typeof event.CustomFlags[prop] === 'string'
-                    || typeof event.CustomFlags[prop] === 'boolean') {
+                else if (typeof event.CustomFlags[prop] === 'number' ||
+                    typeof event.CustomFlags[prop] === 'string' ||
+                    typeof event.CustomFlags[prop] === 'boolean') {
                     valueArray.push(event.CustomFlags[prop].toString());
                 }
 
@@ -825,7 +825,7 @@
             if (event.ShoppingCart) {
                 dto.sc = {
                     pl: convertProductListToDTO(event.ShoppingCart.ProductList)
-                }
+                };
             }
 
             if (event.ProductAction) {
@@ -860,7 +860,7 @@
                     return {
                         pil: impression.ProductImpressionList,
                         pl: convertProductListToDTO(impression.ProductList)
-                    }
+                    };
                 });
             }
         }
@@ -901,14 +901,13 @@
         var convertedBag = {},
             list;
 
+        var itemConversion = function(item) { return convertProductToDTO(item);};
         for (var prop in productsBags) {
             if (!productsBags.hasOwnProperty(prop)) {
                 continue;
             }
 
-            list = productsBags[prop].map(function(item) {
-                return convertProductToDTO(item);
-            });
+            list = productsBags[prop].map(itemConversion);
 
             if (isWebViewEmbedded()) {
                 convertedBag[prop] = {
@@ -987,6 +986,7 @@
             case ProductActionType.ViewDetail:
                 return 'ViewDetail';
             case ProductActionType.Unknown:
+                break;
             default:
                 return 'Unknown';
         }
@@ -1046,13 +1046,15 @@
 
     function expandProductAction(commerceEvent) {
         var appEvents = [];
+        var attributes;
+
         if (commerceEvent.ProductAction == null) {
             return appEvents;
         }
         var shouldExtractActionAttributes = false;
         if (commerceEvent.ProductAction.ProductActionType == ProductActionType.Purchase || 
             commerceEvent.ProductAction.ProductActionType == ProductActionType.Refund) {
-            var attributes = commerceEvent.EventAttributes || {};
+            attributes = commerceEvent.EventAttributes || {};
             extractActionAttributes(attributes, commerceEvent.ProductAction);
             if (commerceEvent.CurrencyCode != null) {
                 attributes['Currency Code'] = commerceEvent.CurrencyCode;
@@ -1071,7 +1073,7 @@
             return appEvents;
         }
         for (var i = 0; i < products.length; i++) {
-            var attributes = products[i].Attributes || {};
+            attributes = products[i].Attributes || {};
             if (shouldExtractActionAttributes) {
                 extractActionAttributes(attributes, commerceEvent.ProductAction);
             } else {
@@ -1094,28 +1096,28 @@
             attributes['Coupon Code'] = product.CouponCode;
 
         if (product.Brand != null)
-            attributes['Brand'] = product.Brand;
+            attributes.Brand = product.Brand;
 
         if (product.Category != null)
-            attributes['Category'] = product.Category;
+            attributes.Category = product.Category;
 
         if (product.Name != null)
-            attributes['Name'] = product.Name;
+            attributes.Name = product.Name;
 
         if (product.Sku != null)
-            attributes['Id'] = product.Sku;
+            attributes.Id = product.Sku;
 
         if (product.Price != null)
             attributes['Item Price'] = product.Price;
 
         if (product.Quantity != null)
-            attributes['Quantity'] = product.Quantity;
+            attributes.Quantity = product.Quantity;
 
         if (product.Position != null)
-            attributes['Position'] = product.Position;
+            attributes.Position = product.Position;
 
         if (product.Variant != null)
-            attributes['Variant'] = product.Variant;
+            attributes.Variant = product.Variant;
 
         attributes['Total Product Amount'] = product.TotalAmount != null ? product.TotalAmount : 0;
 
@@ -1130,7 +1132,7 @@
         extractTransactionId(attributes, productAction);
 
         if (productAction.Affiliation != null)
-            attributes['Affiliation'] = productAction.Affiliation;
+            attributes.Affiliation = productAction.Affiliation;
 
         if (productAction.CouponCode != null)
             attributes['Coupon Code'] = productAction.CouponCode;
@@ -1177,16 +1179,16 @@
 
     function extractPromotionAttributes(attributes, promotion) {
         if (promotion.Id != null)
-            attributes['Id'] = promotion.Id;
+            attributes.Id = promotion.Id;
 
         if (promotion.Creative != null) 
-            attributes['Creative'] = promotion.Creative;
+            attributes.Creative = promotion.Creative;
 
         if (promotion.Name != null)
-            attributes['Name'] = promotion.Name;
+            attributes.Name = promotion.Name;
 
         if (promotion.Position != null)
-            attributes['Position'] = promotion.Position;
+            attributes.Position = promotion.Position;
     }
 
     function expandProductImpression(commerceEvent) {
@@ -1213,7 +1215,7 @@
                             attributes,
                             EventType.Transaction
                         );
-                    appEvents.push(appEvent)
+                    appEvents.push(appEvent);
                 }   
             }
         }
@@ -1253,7 +1255,7 @@
         }
 
         return null;
-    };
+    }
 
     function logCheckoutEvent(step, options, attrs) {
         var event = createCommerceEventObject();
@@ -1302,7 +1304,7 @@
 
             logCommerceEvent(event, attrs);
         }
-    };
+    }
 
     function logRefundEvent(transactionAttributes, product, attrs) {
         if (transactionAttributes == null || typeof transactionAttributes == 'undefined') {
@@ -1469,10 +1471,9 @@
         // https://gist.github.com/jed/982883
         // Added support for crypto for better random
 
-        return a                            // if the placeholder was passed, return
-                ? generateRandomValue(a)    // a random number 
-                : (                         // or otherwise a concatenated string:
-                [1e7] +                     // 10000000 +
+        // if the placeholder was passed, return a random number, otherwise a concatenated string
+        return a ? generateRandomValue(a) :
+                ([1e7] +                     // 10000000 +
                 -1e3 +                      // -1000 +
                 -4e3 +                      // -4000 +
                 -8e3 +                      // -80000000 +
@@ -1685,7 +1686,7 @@
 
     function createImpression(name, product) {
         if (!name) {
-            logDebug('Name is required when creating an impression.')
+            logDebug('Name is required when creating an impression.');
             return null;
         }
 
